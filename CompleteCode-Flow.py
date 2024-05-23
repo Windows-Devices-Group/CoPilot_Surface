@@ -1425,12 +1425,13 @@ if user_question:
                         st.write(query_detailed_deepdive("Summarize reviews of" + device + "for " +  selected_aspect +  "Aspect which have following "+str(dataframe_as_dict)+ str(b) + "Reviews: ",[]))
 
         elif classify_function == "2":
-            st.write(query_detailed_summary(user_question + "Which have the following sentiment data : " + str(dataframe_as_dict),[]))
+            st.dataframe(data)
             try:
                 data = data.dropna()
             except:
                 pass
             generate_chart(data)
+            st.write(query_detailed_summary(user_question + "Which have the following sentiment data : " + str(dataframe_as_dict),[]))
     
     else:
         print('No Flow')
