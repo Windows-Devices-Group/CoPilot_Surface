@@ -127,7 +127,12 @@ def get_conversational_chain_quant(history):
         
         Example : If the user Quesiton is "Summarize reviews of CoPilot Produt"
         
-        User seeks for net sentiment and aspect wise net sentiment of "Windows 10" Product and their respective review count in a single table
+        User seeks for net sentiment and aspect wise net sentiment of "CoPilot" Product and their respective review count in a single table
+
+        Product - "CoPilot"
+        Different Product_Family = Microsoft Copilot, Copilot in Windows 11, Copilot, Github Copilot , Copilot for Security, Copilot Pro, Copilot for Microsoft 365, Copilot for Mobile
+
+        CoPilot is Overall Product and Product_Family are different versions of CoPilot.
         
         Your response should be : Overall Sentiment is nothing but the net sentiment and overall review count of the product
         
