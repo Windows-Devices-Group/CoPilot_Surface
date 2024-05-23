@@ -1396,7 +1396,7 @@ if user_question:
             heat_map = st.checkbox("Would you like to see the Aspect wise sentiment of this Produt?")
             if heat_map:
                 st.dataframe(styled_df)
-                aspect_names = ['Microsoft Product', 'Interface', 'Code Generation', 'Image Generation', 'Productivity', 'Text Summarization/Generation', 'Connectivity', 'Compatibility', 'Privacy', 'Ease of Use', 'Reliability', 'Price', 'Innovation', 'Customization/Personalization', 'Generic']
+                aspect_names = ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
                 with st.form(key='my_form'):
                     aspect_wise_sentiment = st.markdown("Select any one of the aspects to see what consumers reviews about that aspect..")
                     selected_aspect = st.selectbox('Select an aspect to see consumer reviews:', aspect_names)
