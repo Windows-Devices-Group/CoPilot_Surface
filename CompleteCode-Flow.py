@@ -1300,7 +1300,7 @@ def split_table(data,device_a,device_b):
 # In[26]:
 
 
-st.header("Quantifiable Review Summarization")
+st.header("CoPilot Consumer Review Synthesis Tool")
 
 user_question = st.text_input("Enter the Prompt: ")
 if user_question:
@@ -1393,7 +1393,7 @@ if user_question:
             key_df = get_final_df(aspects_list, device)
             b =  key_df.to_dict(orient='records')
             st.write(query_aspect_wise_detailed_summary(user_question+"which have the following sentiment :" + str(dataframe_as_dict) + "and their respective keywords" + str(b),[]))
-            heat_map = st.checkbox("Do you like to see the Aspect wise sentiment of this Produt?")
+            heat_map = st.checkbox("Would you like to see the Aspect wise sentiment of this Produt?")
             if heat_map:
                 st.dataframe(styled_df)
                 aspect_names = ['Microsoft Product', 'Interface', 'Code Generation', 'Image Generation', 'Productivity', 'Text Summarization/Generation', 'Connectivity', 'Compatibility', 'Privacy', 'Ease of Use', 'Reliability', 'Price', 'Innovation', 'Customization/Personalization', 'Generic']
