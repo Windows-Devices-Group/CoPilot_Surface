@@ -1409,7 +1409,7 @@ def user_ques(user_question):
                     st.dataframe(styled_df)
                     aspect_names = ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
                     with st.form(key='my_form'):
-                        aspect_wise_sentiment = st.markdown("Verbatim")
+                        aspect_wise_sentiment = st.markdown("Verbatims")
                         selected_aspect = st.selectbox('Select an aspect to see consumer reviews:', aspect_names)
                         submitted = st.form_submit_button('Submit')
                         if submitted:
@@ -1555,7 +1555,7 @@ def finetuned_prompt(user_question):
 # In[26]:
 
 if __name__ == "__main__":
-    st.header("CoPilot Consumer Review Synthesis Tool")
+    st.header("Copilot Consumer Review Synthesis Tool")
     user_question = st.text_input("Enter the Prompt: ")
     if user_question:
         user_question_1 = finetuned_prompt(user_question)
