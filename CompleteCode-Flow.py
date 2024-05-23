@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[ ]:
+
+
+#!/usr/bin/env python
+# coding: utf-8
+
 # In[2]:
 
 
@@ -131,8 +137,11 @@ def get_conversational_chain_quant(history):
 
         Product - "CoPilot"
         Different Product_Family = Microsoft Copilot, Copilot in Windows 11, Copilot, Github Copilot , Copilot for Security, Copilot Pro, Copilot for Microsoft 365, Copilot for Mobile
+        These are the different aspects : 'Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization','Accessibility'.
 
         CoPilot is Overall Product and Product_Family are different versions of CoPilot.
+        
+        IMPORTANT : IMPLEMENT 'LIKE' OPERATOR where every it is possible.
         
         Your response should be : Overall Sentiment is nothing but the net sentiment and overall review count of the product
         
@@ -249,7 +258,7 @@ def get_conversational_chain_quant(history):
                     WHERE PRODUCT_FAMILY LIKE '%COPILOT FOR MICROSOFT 365%'
                     GROUP BY ASPECT
                     
-        IMPORTANT : Example USE THIS Query for COMPARISION Query - :  if only one aspect (Use always LIKE OPERATOR)
+        IMPORTANT : Example USE THIS Query for COMPARISION Query - :  if only one aspect (Use always 'LIKE' OPERATOR) for ASPECT, GEOGRAPHY, PRODUCT_FAMILY, PRODUCT and so on while performing where condition. 
         
                     SELECT 'GITHUB COPILOT' AS ASPECT, ROUND((SUM(SENTIMENT_SCORE) / SUM(REVIEW_COUNT)) * 100, 1) AS ASPECT_SENTIMENT, SUM(REVIEW_COUNT) AS REVIEW_COUNT
                     FROM Sentiment_Data
@@ -282,7 +291,7 @@ def get_conversational_chain_quant(history):
                     
             IMPORTANT : USE UNION ALL Everytime instead of UNION
                     
-           If the user question is : Compare "Connectivity" feature of CoPilot for Mobile and GitHub CoPilot
+           If the user question is : Compare "Microsoft Product" feature of CoPilot for Mobile and GitHub CoPilot or "Compare the reviews for Github Copilot and Copilot for Microsoft 365 for Microsoft Product"
            
            DO NOT respond like :
            
@@ -290,13 +299,13 @@ def get_conversational_chain_quant(history):
             SELECT 'COPILOT FOR MOBILE' AS PRODUCT_FAMILY, ROUND((SUM(SENTIMENT_SCORE) / SUM(REVIEW_COUNT)) * 100, 1) AS ASPECT_SENTIMENT, SUM(REVIEW_COUNT) AS REVIEW_COUNT 
             FROM Sentiment_Data 
             WHERE PRODUCT_FAMILY LIKE '%COPILOT FOR MOBILE%' 
-            AND ASPECT = 'CONNECTIVITY'
+            AND ASPECT = 'Microsoft Product'
 
             UNION ALL
 
             SELECT 'GITHUB COPILOT' AS PRODUCT_FAMILY, ROUND((SUM(SENTIMENT_SCORE) / SUM(REVIEW_COUNT)) * 100, 1) AS ASPECT_SENTIMENT, SUM(REVIEW_COUNT) AS REVIEW_COUNT 
             FROM Sentiment_Data WHERE PRODUCT_FAMILY LIKE '%GITHUB COPILOT%' 
-            AND ASPECT = 'CONNECTIVITY'
+            AND ASPECT = 'Microsoft Product'
             
             
             Instead respond like : 
@@ -305,13 +314,13 @@ def get_conversational_chain_quant(history):
             SELECT 'COPILOT FOR MOBILE' AS ASPECT, ROUND((SUM(SENTIMENT_SCORE) / SUM(REVIEW_COUNT)) * 100, 1) AS ASPECT_SENTIMENT, SUM(REVIEW_COUNT) AS REVIEW_COUNT 
             FROM Sentiment_Data 
             WHERE PRODUCT_FAMILY LIKE '%COPILOT FOR MOBILE%' 
-            AND ASPECT = '%CONNECTIVITY%'
+            AND ASPECT = '%Microsoft Product%'
 
             UNION ALL
 
             SELECT 'GITHUB COPILOT' AS ASPECT, ROUND((SUM(SENTIMENT_SCORE) / SUM(REVIEW_COUNT)) * 100, 1) AS ASPECT_SENTIMENT, SUM(REVIEW_COUNT) AS REVIEW_COUNT 
             FROM Sentiment_Data WHERE PRODUCT_FAMILY LIKE '%GITHUB COPILOT%' 
-            AND ASPECT LIKE '%CONNECTIVITY%'
+            AND ASPECT LIKE '%Microsoft Product%'
             
             IMPORTANT : Do not use Order By here.
             
@@ -1004,7 +1013,7 @@ def classify(user_question):
             Product = Microsoft Copilot, Copilot in Windows 11, Copilot, Github Copilot , Copilot for Security, Copilot Pro, Copilot for Microsoft 365, Copilot for Mobile
             
             1stFlow: The user_question should focus more on one Product (How does that Product Perform or Summarize that Product reviews ) Then choose the 1st flow.
-            2ndFlow: User is seeking any other information like geography wise performance or any quantitative numbers like what is net sentiment for different product families then categorize as 2ndFlow.
+            2ndFlow: User is seeking any other information like geography wise performance or any quantitative numbers like what is net sentiment for different product families then categorize as 2ndFlow. It should even choose 2nd flow, if it asks for Aspect wise sentiment of one Product.
             
             Example - Geography wise how products are performing or seeking for information across different product families/products.
             What is net sentiment for any particular product/geography
@@ -1302,148 +1311,253 @@ def split_table(data,device_a,device_b):
 
     return device_a_table, device_b_table
 
-# In[26]:
+def user_ques(user_question):
+    if user_question:
+        device_list = Sentiment_Data['Product_Family'].to_list()
+        sorted_device_list_desc = sorted(device_list, key=lambda x: len(x), reverse=True)
 
+    # Convert user question and product family names to lowercase for case-insensitive comparison
+        user_question_lower = user_question.lower()
 
-st.header("CoPilot Consumer Review Synthesis Tool")
+        # Initialize variables for device names
+        device_a = None
+        device_b = None
 
-user_question = st.text_input("Enter the Prompt: ")
-if user_question:
-    device_list = Sentiment_Data['Product_Family'].to_list()
-    sorted_device_list_desc = sorted(device_list, key=lambda x: len(x), reverse=True)
+        # Search for product family names in the user question
+        for device in sorted_device_list_desc:
+            if device.lower() in user_question_lower:
+                if device_a is None:
+                    device_a = device
+                else:
+                    if device_a != device and device != 'Copilot':
+                        device_b = device
+                        break# Found both devices, exit the loop
 
-# Convert user question and product family names to lowercase for case-insensitive comparison
-    user_question_lower = user_question.lower()
+        # st.write(device_a)
+        # st.write(device_b)
 
-    # Initialize variables for device names
-    device_a = None
-    device_b = None
+        if device_a != None and device_b != None:
+            col1,col2 = st.columns(2) 
+            data = query_quant(user_question,[])
+            # st.write(data)
+            device_a_table,device_b_table = split_table(data,device_a,device_b)   
+            with col1:
+                device_a_table = device_a_table.dropna(subset=['ASPECT_SENTIMENT'])
+                device_a_table = device_a_table[~device_a_table["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
+                device_a_table = device_a_table[device_a_table['ASPECT_SENTIMENT'] != 0]
+                device_a_table = device_a_table[device_a_table['ASPECT'] != 'Generic']
+                device_a_table = device_a_table.sort_values(by='REVIEW_COUNT', ascending=False)
+                styled_df_a = device_a_table.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
+                data_filtered = device_a_table[(device_a_table["ASPECT"] != device_a) | (device_a_table["ASPECT"] != device_b) & (device_a_table["ASPECT"] != 'Generic')]
+                top_four_aspects = data_filtered.head(4)
+                c = device_a_table.to_dict(orient='records')
+                st.dataframe(styled_df_a)
 
-    # Search for product family names in the user question
-    for device in sorted_device_list_desc:
-        if device.lower() in user_question_lower:
-            if device_a is None:
-                device_a = device
-            else:
-                if device_a != device and device != 'Copilot':
-                    device_b = device
-                    break# Found both devices, exit the loop
-    
-    # st.write(device_a)
-    # st.write(device_b)
-   
-    if device_a != None and device_b != None:
-        col1,col2 = st.columns(2) 
-        data = query_quant(user_question,[])
-        # st.write(data)
-        device_a_table,device_b_table = split_table(data,device_a,device_b)   
-        with col1:
-            device_a_table = device_a_table.dropna(subset=['ASPECT_SENTIMENT'])
-            device_a_table = device_a_table[~device_a_table["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
-            device_a_table = device_a_table[device_a_table['ASPECT_SENTIMENT'] != 0]
-            device_a_table = device_a_table[device_a_table['ASPECT'] != 'Generic']
-            device_a_table = device_a_table.sort_values(by='REVIEW_COUNT', ascending=False)
-            styled_df_a = device_a_table.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
-            data_filtered = device_a_table[(device_a_table["ASPECT"] != device_a) | (device_a_table["ASPECT"] != device_b) & (device_a_table["ASPECT"] != 'Generic')]
-            top_four_aspects = data_filtered.head(4)
-            c = device_a_table.to_dict(orient='records')
-            st.dataframe(styled_df_a)
-                
-        with col2:
-            
-            device_b_table = device_b_table.dropna(subset=['ASPECT_SENTIMENT'])
-            device_b_table = device_b_table[~device_b_table["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
-            device_b_table = device_b_table[device_b_table['ASPECT_SENTIMENT'] != 0]
-            device_b_table = device_b_table[device_b_table['ASPECT'] != 'Generic']
-            device_b_table = device_b_table.sort_values(by='REVIEW_COUNT', ascending=False)
-            styled_df_b = device_b_table.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
-            data_filtered = device_b_table[(device_b_table["ASPECT"] != device_b) | (device_b_table["ASPECT"] != device_a) & (device_b_table["ASPECT"] != 'Generic')]
-            top_four_aspects = data_filtered.head(4)
-            d = device_b_table.to_dict(orient='records')
-            st.dataframe(styled_df_b)
-            
-        user_question = user_question.replace("Compare", "Summarize reviews of")
-        st.write(query_detailed_compare(user_question + "Which have the following sentiment data" + str(c)+str(d)))
-        
-    
-    elif (device_a != None and device_b == None) | (device_a == None and device_b == None)  :
+            with col2:
 
-        data = query_quant(user_question,[]) 
-        # st.write(data)
-        try:
-            total_reviews = data.loc[data.iloc[:, 0] == 'TOTAL', 'REVIEW_COUNT'].iloc[0]
-        except:
-            pass
-        # total_reviews = data.loc[data['ASPECT'] == 'TOTAL', 'REVIEW_COUNT'].iloc[0]
-        try:
-            data['REVIEW_PERCENTAGE'] = data['REVIEW_COUNT'] / total_reviews * 100
-        except:
-            pass
-        dataframe_as_dict = data.to_dict(orient='records')
-
-        classify_function = classify(user_question+str(dataframe_as_dict))
-        
-
-        if classify_function == "1":
-            data_new = data
-            data_new = data_new.dropna(subset=['ASPECT_SENTIMENT'])
-            data_new = data_new[~data_new["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
-            data_new = make_desired_df(data_new)
-            styled_df = data_new.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
-            data_filtered = data_new[(data_new['ASPECT'] != 'TOTAL') & (data_new['ASPECT'] != 'Generic')]
-            top_four_aspects = data_filtered.head(4)
-            dataframe_as_dict = data_new.to_dict(orient='records')
-            aspects_list = top_four_aspects['ASPECT'].to_list()
-    #         formatted_aspects = ', '.join(f"'{aspect}'" for aspect in aspects_list)
-            key_df = get_final_df(aspects_list, device)
-            b =  key_df.to_dict(orient='records')
-            st.write(query_aspect_wise_detailed_summary(user_question+"which have the following sentiment :" + str(dataframe_as_dict) + "and their respective keywords" + str(b),[]))
-            heat_map = st.checkbox("Would you like to see the Aspect wise sentiment of this Produt?")
-            if heat_map:
-                st.dataframe(styled_df)
-                aspect_names = ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
-                with st.form(key='my_form'):
-                    aspect_wise_sentiment = st.markdown("Select any one of the aspects to see what consumers reviews about that aspect..")
-                    selected_aspect = st.selectbox('Select an aspect to see consumer reviews:', aspect_names)
-                    submitted = st.form_submit_button('Submit')
-                    if submitted:
-                        query = f"""
-                        SELECT Keywords,
-                               COUNT(CASE WHEN Sentiment = 'positive' THEN 1 END) AS Positive_Count,
-                               COUNT(CASE WHEN Sentiment = 'negative' THEN 1 END) AS Negative_Count,
-                               COUNT(CASE WHEN Sentiment = 'neutral' THEN 1 END) AS Neutral_Count,
-                               COUNT(*) as Total_Count
-                        FROM Sentiment_Data
-                        WHERE Aspect LIKE '%{selected_aspect}%' AND Product_Family LIKE '%{device}%'
-                        GROUP BY Keywords
-                        ORDER BY Total_Count DESC;
-                        """
-                        key_df = ps.sqldf(query, globals())
-                        total_aspect_count = key_df['Total_Count'].sum()
-                        key_df['Positive_Percentage'] = (key_df['Positive_Count'] / key_df['Total_Count']) * 100
-                        key_df['Negative_Percentage'] = (key_df['Negative_Count'] / key_df['Total_Count']) * 100
-                        key_df['Neutral_Percentage'] = (key_df['Neutral_Count'] / key_df['Total_Count']) * 100
-                        key_df['Keyword_Contribution'] = (key_df['Total_Count'] / total_aspect_count) * 100
-                        key_df = key_df.drop(['Positive_Count', 'Negative_Count', 'Neutral_Count', 'Total_Count'], axis=1)
-                        key_df = key_df.head(10)
-                        b =  key_df.to_dict(orient='records')
-                        st.write(query_detailed_deepdive("Summarize reviews of" + device + "for " +  selected_aspect +  "Aspect which have following "+str(dataframe_as_dict)+ str(b) + "Reviews: ",[]))
-
-        elif classify_function == "2":
-            st.dataframe(data)
+                device_b_table = device_b_table.dropna(subset=['ASPECT_SENTIMENT'])
+                device_b_table = device_b_table[~device_b_table["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
+                device_b_table = device_b_table[device_b_table['ASPECT_SENTIMENT'] != 0]
+                device_b_table = device_b_table[device_b_table['ASPECT'] != 'Generic']
+                device_b_table = device_b_table.sort_values(by='REVIEW_COUNT', ascending=False)
+                styled_df_b = device_b_table.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
+                data_filtered = device_b_table[(device_b_table["ASPECT"] != device_b) | (device_b_table["ASPECT"] != device_a) & (device_b_table["ASPECT"] != 'Generic')]
+                top_four_aspects = data_filtered.head(4)
+                d = device_b_table.to_dict(orient='records')
+                st.dataframe(styled_df_b)
             try:
-                data = data.dropna()
+                user_question = user_question.replace("Compare", "Summarize reviews of")
             except:
                 pass
-            generate_chart(data)
-            st.write(query_detailed_summary(user_question + "Which have the following sentiment data : " + str(dataframe_as_dict),[]))
+            st.write(query_detailed_compare(user_question + "Which have the following sentiment data" + str(c)+str(d)))
+
+
+        elif (device_a != None and device_b == None) | (device_a == None and device_b == None)  :
+
+            data = query_quant(user_question,[]) 
+            # st.write(data)
+            try:
+                total_reviews = data.loc[data.iloc[:, 0] == 'TOTAL', 'REVIEW_COUNT'].iloc[0]
+            except:
+                pass
+            # total_reviews = data.loc[data['ASPECT'] == 'TOTAL', 'REVIEW_COUNT'].iloc[0]
+            try:
+                data['REVIEW_PERCENTAGE'] = data['REVIEW_COUNT'] / total_reviews * 100
+            except:
+                pass
+            dataframe_as_dict = data.to_dict(orient='records')
+
+            classify_function = classify(user_question+str(dataframe_as_dict))
+
+
+            if classify_function == "1":
+                data_new = data
+                data_new = data_new.dropna(subset=['ASPECT_SENTIMENT'])
+                data_new = data_new[~data_new["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
+                data_new = make_desired_df(data_new)
+                styled_df = data_new.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
+                data_filtered = data_new[(data_new['ASPECT'] != 'TOTAL') & (data_new['ASPECT'] != 'Generic')]
+                top_four_aspects = data_filtered.head(4)
+                dataframe_as_dict = data_new.to_dict(orient='records')
+                aspects_list = top_four_aspects['ASPECT'].to_list()
+        #         formatted_aspects = ', '.join(f"'{aspect}'" for aspect in aspects_list)
+                key_df = get_final_df(aspects_list, device)
+                b =  key_df.to_dict(orient='records')
+                st.write(query_aspect_wise_detailed_summary(user_question+"which have the following sentiment :" + str(dataframe_as_dict) + "and their respective keywords" + str(b),[]))
+                heat_map = st.checkbox("Would you like to see the Aspect wise sentiment of this Product?")
+                if heat_map:
+                    st.dataframe(styled_df)
+                    aspect_names = ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
+                    with st.form(key='my_form'):
+                        aspect_wise_sentiment = st.markdown("Verbatim")
+                        selected_aspect = st.selectbox('Select an aspect to see consumer reviews:', aspect_names)
+                        submitted = st.form_submit_button('Submit')
+                        if submitted:
+                            query = f"""
+                            SELECT Keywords,
+                                   COUNT(CASE WHEN Sentiment = 'positive' THEN 1 END) AS Positive_Count,
+                                   COUNT(CASE WHEN Sentiment = 'negative' THEN 1 END) AS Negative_Count,
+                                   COUNT(CASE WHEN Sentiment = 'neutral' THEN 1 END) AS Neutral_Count,
+                                   COUNT(*) as Total_Count
+                            FROM Sentiment_Data
+                            WHERE Aspect LIKE '%{selected_aspect}%' AND Product_Family LIKE '%{device}%'
+                            GROUP BY Keywords
+                            ORDER BY Total_Count DESC;
+                            """
+                            key_df = ps.sqldf(query, globals())
+                            total_aspect_count = key_df['Total_Count'].sum()
+                            key_df['Positive_Percentage'] = (key_df['Positive_Count'] / key_df['Total_Count']) * 100
+                            key_df['Negative_Percentage'] = (key_df['Negative_Count'] / key_df['Total_Count']) * 100
+                            key_df['Neutral_Percentage'] = (key_df['Neutral_Count'] / key_df['Total_Count']) * 100
+                            key_df['Keyword_Contribution'] = (key_df['Total_Count'] / total_aspect_count) * 100
+                            key_df = key_df.drop(['Positive_Count', 'Negative_Count', 'Neutral_Count', 'Total_Count'], axis=1)
+                            key_df = key_df.head(10)
+                            b =  key_df.to_dict(orient='records')
+                            st.write(query_detailed_deepdive("Summarize reviews of" + device + "for " +  selected_aspect +  "Aspect which have following "+str(dataframe_as_dict)+ str(b) + "Reviews: ",[]))
+
+            elif classify_function == "2":
+                st.dataframe(data)
+                try:
+                    data = data.dropna()
+                except:
+                    pass
+                generate_chart(data)
+                try:
+                    user_question = user_question.replace("What is the", "Summarize reviews of")
+                except:
+                    pass
+                st.write(query_detailed_summary(user_question + "Which have the following sentiment data : " + str(dataframe_as_dict),[]))
+
+        else:
+            print('No Flow')
+            
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+os.environ["AZURE_OPENAI_API_KEY"] = "672370cd6ca440f2a0327351d4f4d2bf"
+os.environ["AZURE_OPENAI_ENDPOINT"] = "https://hulk-openai.openai.azure.com/"
+from openai import AzureOpenAI
+
+client = AzureOpenAI(
+    api_key=os.getenv("672370cd6ca440f2a0327351d4f4d2bf"),  
+    api_version="2024-02-01",
+    azure_endpoint = os.getenv("https://hulk-openai.openai.azure.com/")
+    )
     
-    else:
-        print('No Flow')
+deployment_name='SurfaceGenAI'
 
+context = """
+You are given a list of product names and a mapping file that maps these names to their corresponding product families. Your task is two-fold:
 
-# In[ ]:
+1. Rephrase any input sentence by replacing the product name with its correct product family according to the mapping file.
+2. Modify the input sentence into one of the specified Features.
 
+Features and sample prompts:
+    1. Comparison - "Compare different features for [Product 1] and [Product 2]"
+    2. Specific Feature comparison - "Compare [Feature] feature of [Product 1] and [Product 2]
+        Features are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
+    3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
+    4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
+        4.1. It can be across any categories such as Product Family, Geography, Data Source etc. Hence repharse the input sentence accordingly.
+    5. Asking net sentiment or review count for multiple Products - "What is the net sentiment and review count of different Product families?". Do not enter multiple product names in this case.
 
+Mapping file:
 
+Copilot in Windows 11 -> Windows Copilot
+Copilot -> Microsoft Copilot
+Copilot for Security -> Copilot for Security
+Copilot Pro -> Copilot Pro
+Microsoft Copilot -> Microsoft Copilot
+Copilot for Microsoft 365 -> Copilot for Microsoft 365
+Github Copilot -> Github Copilot
+Copilot for Mobile -> Copilot for Mobile
+Windows Copilot -> Windows Copilot
+Copilot for Windows -> Windows Copilot
+Copilot Windows -> Windows Copilot
+Win Copilot -> Windows Copilot
+Security Copilot -> Copilot for Security
+Privacy Copilot -> Copilot for Security
+M365 -> Copilot for Microsoft 365
+Microsoft 365 -> Copilot for Microsoft 365
+Office copilot -> Copilot for Microsoft 365
+Github -> Github Copilot
+MS Office -> Copilot for Microsoft 365
+MSOffice -> Copilot for Microsoft 365
+Microsoft Office -> Copilot for Microsoft 365
+Office Product -> Copilot for Microsoft 365
+Mobile -> Copilot for Mobile
+App -> Copilot for Mobile
+ios -> Copilot for Mobile
+apk -> Copilot for Mobile
 
+IMPORTANT: If the input sentence mentions a device(Laptop or Desktop) instead of Copilot, keep the device name as it is.
+
+Rephrase the following input with the correct product family and modify it to fit one of the specified functionalities.
+
+Input: "Summarize reviews for Win Copilot"
+
+Output: "Summarize reviews for Windows Copilot"
+
+Input: "What's the aspect-wise sentiment for Copilot for Windows?"
+
+Output: "What's the aspect-wise sentiment for Windows Copilot?"
+
+Input: "Copilot for Windows vs Copilot Apk"
+Output: "Compare different features of Windows Copilot and Copilot for Mobile"
+
+Input: ""What is the sentiment for copilot in united states"
+Output: "What is the net sentiment for Microsoft Copilot in the United States?
+
+Please rephrase and modify the following input sentences with the correct product family names and into one of the specified formats:
+
+[List of input sentences]
+"""
+
+def finetuned_prompt(user_question):
+    global context
+    # Append the new question to the context
+    full_prompt = context + "\nQuestion:\n" + user_question + "\nAnswer:"
+    
+    # Send the query to Azure OpenAI
+    response = client.completions.create(
+        model=deployment_name,
+        prompt=full_prompt,
+        max_tokens=500,
+        temperature=0
+    )
+    
+    # Extract the generated SQL query
+    user_query = response.choices[0].text.strip()
+    
+    # Update context with the latest interaction
+    context += "\nQuestion:\n" + user_question + "\nAnswer:\n" + user_query
+    
+    return user_query
+
+# In[26]:
+
+if __name__ == "__main__":
+    st.header("CoPilot Consumer Review Synthesis Tool")
+    user_question = st.text_input("Enter the Prompt: ")
+    if user_question:
+        user_question_1 = finetuned_prompt(user_question)
+        # st.write(user_question_1)
+        user_ques(user_question_1)
