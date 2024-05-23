@@ -1355,7 +1355,7 @@ if user_question:
             device_b_table = device_b_table[~device_b_table["ASPECT"].isin(["Generic", "Account", "Customer-Service", "Browser"])]
             device_b_table = device_b_table[device_b_table['ASPECT_SENTIMENT'] != 0]
             device_b_table = device_b_table[device_b_table['ASPECT'] != 'Generic']
-            device_a_table = device_a_table.sort_values(by='REVIEW_COUNT', ascending=False)
+            device_b_table = device_b_table.sort_values(by='REVIEW_COUNT', ascending=False)
             styled_df_b = device_b_table.style.applymap(lambda x: custom_color_gradient(x, int(-100), int(100)), subset=['ASPECT_SENTIMENT'])
             data_filtered = device_b_table[(device_b_table["ASPECT"] != device_b) | (device_b_table["ASPECT"] != device_a) & (device_b_table["ASPECT"] != 'Generic')]
             top_four_aspects = data_filtered.head(4)
