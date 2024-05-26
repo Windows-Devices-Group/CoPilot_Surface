@@ -1825,7 +1825,7 @@ if __name__ == "__main__":
         print(classification)
         if classification != 'Generic':
             user_question_1 = rephrased_prompt(user_question)
-            # st.write(user_question_1)
+            st.write(user_question_1)
             user_ques(user_question_1)
         else:
             user_question_1 = user_question
