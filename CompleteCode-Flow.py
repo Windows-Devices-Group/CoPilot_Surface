@@ -1546,6 +1546,9 @@ In Comparision feature that we have built, we have the capability just to compar
 So Choose "Comparison" Only if there are 2 devices mentioned. If there are 2 or more devices, then go with "Generic"
 Do not choose Comparision just by seeing the word comparision. 
 
+
+IMPORTANT : Choose "Generic" most of the time. Select Comparision, Summarization and Quantifiable only if you are 100% sure about the user question and the function/feature.
+
 If user question just mentioned verbatims for devices. Provide Generic
 Your task is to categorize incoming user queries into one of these four features.
 Your response should be one of the following:
@@ -1592,6 +1595,7 @@ deployment_name='SurfaceGenAI'
 context = """
 You are given a list of product names and a mapping file that maps these names to their corresponding product families. Your task is two-fold:
 
+CoPilot is the Product and it has following Product_Families:
 List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
 
 
@@ -1600,8 +1604,8 @@ List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Co
 
 Features and sample prompts:
     1. Comparison - "Compare different features for [Product 1] and [Product 2]"
-    2. Specific Feature comparison - "Compare [Feature] Aspect of [Product 1] and [Product 2]
-        Features are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
+    IMPORTANT : Features/Aspects are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
+    2. Specific Feature/Aspect comparison - "Compare [Feature] Aspect of [Product 1] and [Product 2]
     3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
     4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
         4.1. It can be across any categories such as Product Family, Geography, Data Source etc. Hence repharse the input sentence accordingly.
