@@ -1604,6 +1604,9 @@ IMPORTANT : Features/Aspects are : ['Microsoft Product', 'Interface', 'Connectiv
 
 Features and sample prompts:
     1. Comparison - "Compare different features for [Product 1] and [Product 2]"
+       Example:
+        Input - Compare reviews of Copilot for Microsoft 365 and Copilot for Mobile"
+        Output - "Compare different features for Copilot  and [Product 2]"
     2. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
     3. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]". It might also be "What is the best device?" (Based on Net Sentiment) , "What is the device user mostly comment about" (Based on Review Count) and all of these
         4.1. It can be across any categories such as Product Family, Geography, Data Source etc. Hence repharse the input sentence accordingly.
