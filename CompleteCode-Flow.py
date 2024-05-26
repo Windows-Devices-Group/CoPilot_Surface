@@ -665,7 +665,7 @@ def get_conversational_chain_generic():
         
             IMPORTANT: Use only the data provided to you and do not rely on pre-trained documents.
 
-            INMPORTANT : Verbatims is nothing but Review
+            INMPORTANT : Verbatims is nothing but Review. if user asks for top reviews. Give some important reviews user mentioned.
             
             Given a dataset with these columns: Review, Data_Source, Geography, Product_Family, Sentiment and Aspect (also called Features)
                       
