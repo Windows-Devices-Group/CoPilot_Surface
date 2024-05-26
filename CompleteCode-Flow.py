@@ -460,13 +460,13 @@ def get_conversational_chain_aspect_wise_detailed_summary(history):
 
             IMPOPRTANT : Start with : "These are the 4 major aspects users commented about" and mention their review count contributions. These top 4 shold be based on ASPECT_RANKING Column
 
-                           These are the 4 major aspects users commented about - IMPORTANT : These top 4 should be from Aspect Ranking:
+                           These are the 4 top ranked aspects users commented about - IMPORTANT : These top 4 should be from Aspect Ranking:
                            
                            IMPORTANT : DO NOT CONSIDER GENERIC AS ONE OF THE ASPECTS
 
                         - Total Review for CoPilot for Mobile Product is 1200
-                        - Code Generarion: 13.82% of the reviews mentioned this aspect
-                        - Ease of Use: 11.08% of the reviews mentioned this aspect
+                        - Code Generarion: 4.82% of the reviews mentioned this aspect
+                        - Ease of Use: 6% of the reviews mentioned this aspect
                         - Compatibility: 9.71% of the reviews mentioned this aspect
                         - Interface: 7.37% of the reviews mentioned this aspect
 
@@ -1355,7 +1355,7 @@ def get_conversational_chain_quant_classify2():
                 Product: Corresponding product for the review. It contains the value "COPILOT"
                 Product_Family: Which version or type of the corresponding Product was the review posted for. Different Product Families are "Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"
                 Sentiment: What is the sentiment of the review. It contains following values: 'Positive', 'Neutral', 'Negative'.
-                Aspect: The review is talking about which aspect or feature of the product. It contains following values: "Audio-Microphone","Software","Performance","Storage/Memory","Keyboard","Browser","Connectivity","Hardware","Display","Graphics","Battery","Gaming","Design","Ports","Price","Camera","Customer-Service","Touchpad","Account","Generic"
+                Aspect: The review is talking about which aspect or feature of the product. It contains following values: ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
                 Keyword: What are the keywords mentioned in the product
                 Review_Count - It will be 1 for each review or each row
                 Sentiment_Score - It will be 1, 0 or -1 based on the Sentiment.
@@ -1516,17 +1516,23 @@ deployment_name='SurfaceGenAI'
 
 context_Prompt = """
 
-As a data scientist analyzing the sentiment data of the Copilot product, we have developed several features to facilitate the synthesis of consumer review sentiment data. [Questions regarding Pros and Cons, Top verbatims, and similar inquiries are not applicable here.] [Here, ‘Device’ is synonymous with ‘Product_Family’.] We have created the following list of features:
+As a data scientist analyzing the sentiment data of the Copilot product, we have developed several features to facilitate the synthesis of consumer review sentiment data. 
+
+[Questions regarding Pros and Cons, Top verbatims, and similar inquiries are not applicable here.] [Here, ‘Device’ is synonymous with ‘Product_Family’.] We have created the following list of features:
 
 note : Verbatims means raw reviews
 
+List of aspects : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
+List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
+
 Quantifiable and visualization - This feature enables the retrieval and visualization of data for any requested product/feature. It can answer queries like “Which is the best device?” (Based on Net Sentiment) or “Which device is most commonly commented on?” (Based on Review Count), among others.
-Comparison - This feature allows users to compare different Products based on user reviews.
+Comparison - This feature allows users to compare two different Products based on user reviews. 
+    IMPORTANT : If the user Question mentions 3 or more different Product Families. Then don't give it as Comparision . Make it as Generic.
 Generic - This category allows users to ask general questions about any Product, such as the Pros and Cons, common complaints associated with a device, and the top verbatims (Reviews) mentioned in product reviews, etc.
 Summarization of reviews for a specific Product - This feature provides a summary of the most frequently mentioned aspects of a device, offering both quantifiable and detailed sentiment analysis. (Don't choose this functionc, if the user asks for basic pros and cons, top verbatims and all)
 
 If user question just mentioned verbatims for devices. Provide Generic
-Your task is to categorize incoming user queries into one of these four features. You must discern what the user is seeking from the features listed above. 
+Your task is to categorize incoming user queries into one of these four features.
 Your response should be one of the following:
 
 “Summarization”
