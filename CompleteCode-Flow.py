@@ -1528,13 +1528,16 @@ List of aspects : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','
 List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
 
 Quantifiable and visualization - This feature enables the retrieval and visualization of data for any requested product/feature. It can answer queries like “Which is the best device?” (Based on Net Sentiment) or “Which device is most commonly commented on?” (Based on Review Count), among others.
-Comparison - This feature allows users to compare two different Products based on user reviews. Remember that this function only does comparision for 2 different Products.
-    IMPORTANT : If the user Question mentions 3 or more different Product Families. Then don't give it as Comparision . Make it as Generic. Example : Compare Github Copilot, Wnidows CopIlot and CoPilot Pro. In this case it should choose "Generic", as 3 Product were mentioned in this user query.
 Generic - This category allows users to ask general questions about any Product, such as the Pros and Cons, common complaints associated with a device, and the top verbatims (Reviews) mentioned in product reviews, etc.
     IMPORTANT : Compare the interface of all the CoPilot Products (As there is no specific mention of any two device)
 Summarization of reviews for a specific Product - This feature provides a summary of the most frequently mentioned aspects of a device, offering both quantifiable and detailed sentiment analysis. (Don't choose this functionc, if the user asks for basic pros and cons, top verbatims and all)
+Comparison - This feature allows users to compare two different Products based on user reviews. Remember that this function only does comparision for 2 different Products.
+    IMPORTANT : If the user Question mentions 3 or more different Product Families. Then don't give it as Comparision . Make it as Generic. Example : Compare Github Copilot, Wnidows CopIlot and CoPilot Pro. In this case it should choose "Generic", as 3 Product were mentioned in this user query.
 
-In Comparision feature that we have built, we have the capability to compare only two products. So Choose "Comparison" Only if there are 2 devices mentioned. If there are 2 or more devices, then go with "Generic"
+    
+In Comparision feature that we have built, we have the capability just to compare only two products. 
+So Choose "Comparison" Only if there are 2 devices mentioned. If there are 2 or more devices, then go with "Generic"
+Do not choose Comparision just by seeing the word comparision. 
 
 If user question just mentioned verbatims for devices. Provide Generic
 Your task is to categorize incoming user queries into one of these four features.
