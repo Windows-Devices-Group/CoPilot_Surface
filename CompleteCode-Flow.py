@@ -1744,7 +1744,7 @@ def user_ques(user_question):
         #         formatted_aspects = ', '.join(f"'{aspect}'" for aspect in aspects_list)
                 key_df = get_final_df(aspects_list, device)
                 b =  key_df.to_dict(orient='records')
-                st.write(query_aspect_wise_detailed_summary(user_question+"which have the following sentiment :" + str(dataframe_as_dict) + "and their respective keywords" + str(b),[]))
+                st.write(query_aspect_wise_detailed_summary(user_question+"which have the following sentiment :" + str(dataframe_as_dict) + "these are the imporatnt aspect based on aspect ranking : " + str(aspects_list) + "and their respective keywords" + str(b),[]))
                 heat_map = st.checkbox("Would you like to see the Aspect wise sentiment of this Product?")
                 if heat_map:
                     st.dataframe(styled_df)
