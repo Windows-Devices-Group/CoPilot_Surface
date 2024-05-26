@@ -1518,6 +1518,7 @@ context_Prompt = """
 
 As a data scientist analyzing the sentiment data of the Copilot product, we have developed several features to facilitate the synthesis of consumer review sentiment data. [Questions regarding Pros and Cons, Top verbatims, and similar inquiries are not applicable here.] [Here, ‘Device’ is synonymous with ‘Product_Family’.] We have created the following list of features:
 
+note : Verbatims means raw reviews
 
 Quantifiable and visualization - This feature enables the retrieval and visualization of data for any requested product/feature. It can answer queries like “Which is the best device?” (Based on Net Sentiment) or “Which device is most commonly commented on?” (Based on Review Count), among others.
 Comparison - This feature allows users to compare different Products based on user reviews.
