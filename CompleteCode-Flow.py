@@ -1,16 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
-
-#Import Required Libraries
 import streamlit as st
 from azure.core.credentials import AzureKeyCredential
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -51,9 +38,6 @@ os.environ["AZURE_OPENAI_ENDPOINT"] = "https://hulk-openai.openai.azure.com/"
 
 #Reading the dataset
 Sentiment_Data  = pd.read_csv("New_CoPilot_Data.csv")
-
-
-# In[3]:
 
 
 def Sentiment_Score_Derivation(value):
@@ -136,7 +120,7 @@ def get_conversational_chain_quant(history):
         User seeks for net sentiment and aspect wise net sentiment of "CoPilot" Product and their respective review count in a single table
 
         Product - "CoPilot"
-        Different Product_Family = Microsoft Copilot, Copilot in Windows 11, Copilot, Github Copilot , Copilot for Security, Copilot Pro, Copilot for Microsoft 365, Copilot for Mobile
+        Different Product_Family = Microsoft Copilot, Windows CoPilot, Copilot, Github Copilot , Copilot for Security, Copilot Pro, Copilot for Microsoft 365, Copilot for Mobile
         These are the different aspects : 'Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization','Accessibility'.
 
         CoPilot is Overall Product and Product_Family are different versions of CoPilot.
@@ -430,9 +414,6 @@ def query_quant(user_question, history, vector_store_path="faiss_index_CopilotSa
         return err
 
 
-# In[7]:
-
-
 def get_conversational_chain_aspect_wise_detailed_summary(history):
     try:
         hist = """"""
@@ -445,9 +426,7 @@ def get_conversational_chain_aspect_wise_detailed_summary(history):
             hist = hist+"\nResponse: "+ x
         prompt_template = """
         
-        
-    
-        
+       
         1. Your Job is to analyse the Net Sentiment, Aspect wise sentiment and Key word regarding the different aspect and summarize the reviews that user asks for utilizing the reviews and numbers you get. Use maximum use of the numbers and Justify the numbers using the reviews.
         
         
@@ -481,7 +460,7 @@ def get_conversational_chain_aspect_wise_detailed_summary(history):
 
             IMPOPRTANT : Start with : "These are the 4 major aspects users commented about" and mention their review count contributions. These top 4 shold be based on ASPECT_RANKING Column
 
-                           These are the 4 major aspects users commented about:
+                           These are the 4 major aspects users commented about - IMPORTANT : These top 4 should be from Aspect Ranking:
                            
                            IMPORTANT : DO NOT CONSIDER GENERIC AS ONE OF THE ASPECTS
 
@@ -671,6 +650,69 @@ def query_detailed_compare(user_question, vector_store_path="faiss_index_Copilot
         embeddings = AzureOpenAIEmbeddings(azure_deployment="Embedding-Model")
         vector_store = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
         chain = get_conversational_chain_detailed_compare()
+        docs = vector_store.similarity_search(user_question)
+        response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+        return response["output_text"]
+    except Exception as e:
+        err = f"An error occurred while getting LLM response for detailed review summarization: {e}"
+        return err
+        
+        
+        
+def get_conversational_chain_generic():
+    try:
+        prompt_template = """
+        
+            IMPORTANT: Use only the data provided to you and do not rely on pre-trained documents.
+            
+            Given a dataset with these columns: Review, Data_Source, Geography, Product_Family, Sentiment and Aspect (also called Features)
+                      
+                      Review: This column contains the opinions and experiences of users regarding different product families across geographies, providing insights into customer satisfaction or complaints and areas for improvement.
+                      Data_Source: This column indicates the platform from which the user reviews were collected, such as Reddit, Play Store, App Store, Tech Websites, or YouTube videos.
+                      Geography: This column lists the countries of the users who provided the reviews, allowing for an analysis of regional preferences and perceptions of the products.
+                      Product_Family: This column identifies the broader category of products to which the review pertains, enabling comparisons and trend analysis across different product families.
+                      Sentiment: This column reflects the overall tone of the review, whether positive, negative, or neutral, and is crucial for gauging customer sentiment.
+                      Aspect: This column highlights the particular features or attributes of the product that the review discusses, pinpointing areas of strength or concern.
+                      
+                      Perform the required task from the list below, as per user's query: 
+                      1. Review Summarization - Summarize the reviews by filtering the relevant Aspect, Geography, Product_Family, Sentiment or Data_Source, only based on available reviews and their sentiments in the dataset.
+                      2. Aspect Comparison - Provide a summarized comparison for each overlapping feature/aspect between the product families or geographies ,  only based on available user reviews and their sentiments in the dataset. Include pointers for each aspect highlighting the key differences between the product families or geographies, along with the positive and negative sentiments as per customer perception.
+                      3. New Feature Suggestion/Recommendation - Generate feature suggestions or improvements or recommendations based on the frequency and sentiment of reviews and mentioned aspects and keywords. Show detailed responses to user queries by analyzing review sentiment, specific aspects, and keywords.
+                      4. Hypothetical Reviews - Based on varying customer sentiments for the reviews in the existing dataset, generate hypothetical reviews for any existing feature updation or new feature addition in any device family across any geography, by simulating user reactions. Ensure to synthesize realistic reviews that capture all types of sentiments and opinions of users, by considering their hypothetical prior experience working with the new feature and generate output based on data present in dataset only. After these, provide solutions/remedies for negative hypothetical reviews. 
+                      
+                      Enhance the model’s comprehension to accurately interpret user queries by:
+                      Recognizing abbreviations for country names (e.g., ‘DE’ for Germany, ‘USA’or 'usa' or 'US' for the United States of America) and expanding them to their full names for clarity.
+                      Understanding product family names even when written in reverse order or missing connecting words (e.g., ‘copilot in windows 11’ as ‘copilot windows’ and ‘copilot for security’ as ‘copilot security’ etc.).
+                      Utilizing context and available data columns to infer the correct meaning and respond appropriately to user queries involving variations in product family names or geographical references
+                      Please provide a comprehensive Review summary, feature comparison, feature suggestions for specific product families and actionable insights that can help in product development and marketing strategies.
+                      Generate acurate response only, do not provide extra information.
+            
+            Important: Generate outputs using the provided dataset only, don't use pre-trained information to generate outputs.
+            
+            If the user question is not in the data provided. Just mention - "Not in the context". 
+            But do not restrict yourself in responding to the user questions like 'hello', 'Hi' and basic chat question
+        Context:\n {context}?\n
+        Question: \n{question}\n
+
+        Answer:
+        """
+        prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
+        model = AzureChatOpenAI(
+            azure_deployment="Verbatim-Synthesis",
+            api_version='2023-12-01-preview',
+            temperature = 0.2)
+        chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
+        return chain
+    except Exception as e:
+        err = f"An error occurred while getting conversation chain for detailed review summarization: {e}"
+        return err
+
+# Function to handle user queries using the existing vector store
+def query_detailed_generic(user_question, vector_store_path="faiss_index_CopilotSample"):
+    try:
+        embeddings = AzureOpenAIEmbeddings(azure_deployment="Embedding-Model")
+        vector_store = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
+        chain = get_conversational_chain_generic()
         docs = vector_store.similarity_search(user_question)
         response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
         return response["output_text"]
@@ -920,9 +962,6 @@ def make_desired_df(data):
         return pd.DataFrame()
 
 
-# In[10]:
-
-
 import numpy as np
 
 def custom_color_gradient(val, vmin=-100, vmax=100):
@@ -1001,9 +1040,6 @@ def get_final_df(aspects_list,device):
         
     return final_df
 
-
-# In[12]:
-# 1stFlow: Only if the user is talking about any performance related information or aspect related information for a product that the user is interested in then categorize as 1st flow.
 
 def classify(user_question):
     try:
@@ -1173,9 +1209,6 @@ def generate_chart(df):
             st.plotly_chart(bar)
 
 
-# In[14]:
-
-
 def get_conversational_chain_detailed_deepdive(history):
     try:
         hist = """"""
@@ -1296,6 +1329,165 @@ def query_detailed_deepdive(user_question, history, vector_store_path="faiss_ind
     except Exception as e:
         err = f"An error occurred while getting LLM response for detailed review summarization: {e}"
         return err
+        
+        
+def get_conversational_chain_quant_classify2():
+    try:
+#         hist = """"""
+#         for i in history:
+#             hist = hist+"\nUser: "+i[0]
+#             if isinstance(i[1],pd.DataFrame):
+#                 x = i[1].to_string()
+#             else:
+#                 x = i[1]
+#             hist = hist+"\nResponse: "+x
+
+#################################################################################################################################################################################################################################################
+        prompt_template = """
+        
+        Your Job is to convert the user question to SQL Query (Follow Microsoft SQL server SSMS syntax.). You have to give the query so that it can be used on Microsoft SQL server SSMS.You have to only return query as a result.
+        There is only one table with table name Sentiment_Data where each row is a user review. The table has 10 columns, they are:
+                Review: Review of the Copilot Product
+                Data_Source: From where is the review taken. It contains different retailers
+                Geography: From which Country or Region the review was given. It contains different Geography. The user might mention Geography as Geography/Geographies/Regions
+                Title: What is the title of the review
+                Review_Date: The date on which the review was posted
+                Product: Corresponding product for the review. It contains the value "COPILOT"
+                Product_Family: Which version or type of the corresponding Product was the review posted for. Different Product Families are "Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"
+                Sentiment: What is the sentiment of the review. It contains following values: 'Positive', 'Neutral', 'Negative'.
+                Aspect: The review is talking about which aspect or feature of the product. It contains following values: "Audio-Microphone","Software","Performance","Storage/Memory","Keyboard","Browser","Connectivity","Hardware","Display","Graphics","Battery","Gaming","Design","Ports","Price","Camera","Customer-Service","Touchpad","Account","Generic"
+                Keyword: What are the keywords mentioned in the product
+                Review_Count - It will be 1 for each review or each row
+                Sentiment_Score - It will be 1, 0 or -1 based on the Sentiment.
+                
+            1. If the user asks for count of column 'X', the query should be like this:
+                    SELECT COUNT(DISTINCT ('X')) 
+                    FROM Sentiment_Data
+            2. If the user asks for count of column 'X' for different values of column 'Y', the query should be like this:
+                    SELECT 'Y', COUNT(DISTINCT('X')) AS Total_Count
+                    FROM Sentiment_Data 
+                    GROUP BY 'Y'
+                    ORDER BY TOTAL_COUNT DESC
+            3. If the user asks for Net overall sentiment the query should be like this:
+                    SELECT ((SUM(Sentiment_Score))/(SUM(Review_Count))) * 100 AS Net_Sentiment 
+                    FROM Sentiment_Data
+                    ORDER BY Net_Sentiment DESC
+                    
+            4. If the user asks for Net Sentiment across a column "X", the query should be like this and do not include WHERE condition: 
+                    Here X can be Geography/Product Family or even a particular value
+                    SELECT X, ((SUM(Sentiment_Score)) / (SUM(Review_Count))) * 100 AS Net_Sentiment, SUM(Review_Count) AS Review_Count
+                    FROM Sentiment_Data
+                    GROUP BY X
+                    ORDER BY Net_Sentiment DESC
+                    
+                 
+                    
+            5. If the user asks for Net Sentiment across a column "X" for a particular column Y, the query should be like this:
+                    SELECT X, ((SUM(Sentiment_Score)) / (SUM(Review_Count))) * 100 AS Net_Sentiment, SUM(Review_Count) AS Review_Count
+                    FROM Sentiment_Data
+                    WHERE Y LIKE '%Y%'
+                    GROUP BY X
+                    ORDER BY Net_Sentiment DESC
+                    
+                    
+            7. If the user asks for Net Sentiment across column "X" across different values of column "Y" for a particular value "Z", the query should be like this:
+                    Example - Give me aspect wise net sentiment for different regions/geographies for Windows Copilot
+                    
+                    SELECT X, Y, ((SUM(Sentiment_Score)) / (SUM(Review_Count))) * 100 AS Net_Sentiment
+                    FROM Sentiment_Data
+                    WHERE Y LIKE '%Z%'
+                    GROUP BY X,Y
+                    ORDER BY Net_Sentiment DESC
+                    
+                    
+            8. If the user asks for overall review count, the query should be like this:
+                    SELECT SUM(Review_Count) 
+                    FROM Sentiment_Data
+            9. If the user asks for review distribution across column 'X', the query should be like this:
+                    SELECT 'X', SUM(Review_Count) * 100 / (SELECT SUM(Review_Count) FROM Sentiment_Data) AS Review_Distribution
+                    FROM Sentiment_Data 
+                    GROUP BY 'X'
+                    ORDER BY Review_Distribution DESC
+            10. If the user asks for column 'X' Distribution across column 'Y', the query should be like this: 
+                    SELECT 'Y', SUM('X') * 100 / (SELECT SUM('X') AS Reviews FROM Sentiment_Data) AS Distribution_PCT
+                    FROM Sentiment_Data 
+                    GROUP BY 'Y'
+                    ORDER BY Distribution_PCT DESC
+                    
+            11. SELECT ASPECT, ROUND((SUM(SENTIMENT_SCORE) / SUM(REVIEW_COUNT)) * 100, 1) AS ASPECT_SENTIMENT, SUM(REVIEW_COUNT) AS REVIEW_COUNT
+                    FROM Sentiment_Data
+                    WHERE PRODUCT_FAMILY LIKE '%GITHUB COPILOT%'
+                    GROUP BY ASPECT
+                    HAVING ASPECT LIKE '%CODE GENERATION%'
+                    
+                    USE LIKE OPERATOR while filtering (USING WHERE CLAUSE) for PRODUCT_FAMILY, ASPECT, and wherever necessary.
+                    
+            Important: Always replace '=' operator with LIKE keyword and add '%' before and after filter value for single or multiple WHERE conditions in the generated SQL query 
+            Important : Replace '=' operator with LIKE keyword for WHERE conditions for single or multiple columns, for example - product family  or aspect or geography
+            If there are multiple columns mentioned in WHERE condition, then also replace "=" operator with LIKE keyword
+            Include WHERE condition in the query only if user is asking for a particular column/value.
+            Always include ORDER BY clause to sort the table based on the aggregate value calculated in the query.
+            Use 'LIMIT' operator instead of TOP operator.Do not use TOP OPERATOR. Follow syntax that can be used with pandasql.
+            Important: You Response should directly start from SQL query nothing else.
+            Important: Generate outputs using the provided dataset only, don't use pre-trained information to generate outputs.
+        
+        Context:\n {context}?\n
+        Question: \n{question}\n
+
+        Answer:
+        """
+########################################################################################################################################
+#########################################################################################
+        
+
+        prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
+        model = AzureChatOpenAI(
+            azure_deployment="Verbatim-Synthesis",
+            api_version='2024-03-01-preview',
+            temperature = 0.3)
+        chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
+        return chain
+    except Exception as e:
+        err = f"An error occurred while getting conversation chain for quantifiable review summarization: {e}"
+        return err
+
+#Function to convert user prompt to quantitative outputs for Copilot Review Summarization
+def query_quant_classify2(user_question, vector_store_path="faiss_index_CopilotSample"):
+    try:
+        # Initialize the embeddings model
+        embeddings = AzureOpenAIEmbeddings(azure_deployment="Embedding-Model")
+        
+        # Load the vector store with the embeddings model
+        vector_store = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
+        
+        # Rest of the function remains unchanged
+        chain = get_conversational_chain_quant_classify2()
+        docs = []
+        response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+        SQL_Query = response["output_text"]
+        # st.write(SQL_Query)
+        SQL_Query = convert_top_to_limit(SQL_Query)
+        SQL_Query = process_tablename(SQL_Query,"Sentiment_Data")
+        # st.write(SQL_Query)
+        data = ps.sqldf(SQL_Query, globals())
+        data_1 = data
+        html_table = data.to_html(index=False)
+    #     return html_table
+        return data_1
+    except Exception as e:
+        err = f"An error occurred while generating response for quantitative review summarization: {e}"
+        return err
+
+
+
+def quantifiable_data(user_question):
+    try:
+        response = query_quant_classify2(user_question)
+        
+        return response
+    except Exception as e:
+        err = f"An error occurred while generating quantitative review summarization: {e}"
+        return err
 
 
 def split_table(data,device_a,device_b):
@@ -1310,7 +1502,148 @@ def split_table(data,device_a,device_b):
         device_b_table = data.iloc[copilot_index:]
 
     return device_a_table, device_b_table
+    
+    
+from openai import AzureOpenAI
 
+client = AzureOpenAI(
+    api_key=os.getenv("672370cd6ca440f2a0327351d4f4d2bf"),  
+    api_version="2024-02-01",
+    azure_endpoint = os.getenv("https://hulk-openai.openai.azure.com/")
+    )
+    
+deployment_name='SurfaceGenAI'
+
+context_Prompt = """
+
+As a data scientist analyzing the sentiment data of the Copilot product, we have developed several features to facilitate the synthesis of consumer review sentiment data. [Questions regarding Pros and Cons, Top verbatims, and similar inquiries are not applicable here.] [Here, ‘Device’ is synonymous with ‘Product_Family’.] We have created the following list of features:
+
+Summarization of reviews for a specific Product - This feature provides a summary of the most frequently mentioned aspects of a device, offering both quantifiable and detailed sentiment analysis.
+Quantifiable and visualization - This feature enables the retrieval and visualization of data for any requested product/feature. It can answer queries like “Which is the best device?” (Based on Net Sentiment) or “Which device is most commonly commented on?” (Based on Review Count), among others.
+Comparison - This feature allows users to compare different Products based on user reviews.
+Generic - This category allows users to ask general questions about any Product, such as the Pros and Cons, common complaints associated with a device, and the top verbatims (Reviews) mentioned in product reviews, etc.
+
+If user question just mentioned verbatims for devices. Provide Generic
+Your task is to categorize incoming user queries into one of these four features. You must discern what the user is seeking from the features listed above. 
+Your response should be one of the following:
+
+“Summarization”
+“Quantifiable and visualization”
+“Comparison”
+“Generic”
+"""
+
+def finetuned_prompt(user_question):
+    global context_Prompt
+    # Append the new question to the context
+    full_prompt = context_Prompt + "\nQuestion:\n" + user_question + "\nAnswer:"
+    # Send the query to Azure OpenAI
+    response = client.completions.create(
+        model=deployment_name,
+        prompt=full_prompt,
+        max_tokens=500,
+        temperature=0
+    )
+    
+    # Extract the generated SQL query
+    user_query = response.choices[0].text.strip()
+    
+    # Update context with the latest interaction
+    context_Prompt += "\nQuestion:\n" + user_question + "\nAnswer:\n" + user_query
+    
+    return user_query   
+    
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+os.environ["AZURE_OPENAI_API_KEY"] = "672370cd6ca440f2a0327351d4f4d2bf"
+os.environ["AZURE_OPENAI_ENDPOINT"] = "https://hulk-openai.openai.azure.com/"
+
+
+client = AzureOpenAI(
+    api_key=os.getenv("672370cd6ca440f2a0327351d4f4d2bf"),  
+    api_version="2024-02-01",
+    azure_endpoint = os.getenv("https://hulk-openai.openai.azure.com/")
+    )
+    
+deployment_name='SurfaceGenAI'
+
+context = """
+You are given a list of product names and a mapping file that maps these names to their corresponding product families. Your task is two-fold:
+
+1. Rephrase any input sentence by replacing the product name with its correct product family according to the mapping file.
+2. Modify the input sentence into one of the specified Features.
+
+Features and sample prompts:
+    1. Comparison - "Compare different features for [Product 1] and [Product 2]"
+    2. Specific Feature comparison - "Compare [Feature] feature of [Product 1] and [Product 2]
+        Features are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
+    3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
+    4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
+        4.1. It can be across any categories such as Product Family, Geography, Data Source etc. Hence repharse the input sentence accordingly.
+    5. Asking net sentiment or review count for multiple Products - "What is the net sentiment and review count of different Product families?". Do not enter multiple product names in this case.
+
+IMPORTAT : Net Sentiment is different and aspect sentiment is different. Don't rephrase those questions. If the user askes aspect wise sentiment, let it be there as aspect wise sentiment.
+
+Mapping file:
+
+Copilot in Windows 11 -> Windows Copilot
+Copilot for Security -> Copilot for Security
+Copilot Pro -> Copilot Pro
+Microsoft Copilot -> Microsoft Copilot
+Copilot for Microsoft 365 -> Copilot for Microsoft 365
+Github Copilot -> Github Copilot
+Copilot for Mobile -> Copilot for Mobile
+Windows Copilot -> Windows Copilot
+Copilot for Windows -> Windows Copilot
+Copilot Windows -> Windows Copilot
+Win Copilot -> Windows Copilot
+Security Copilot -> Copilot for Security
+Privacy Copilot -> Copilot for Security
+M365 -> Copilot for Microsoft 365
+Microsoft 365 -> Copilot for Microsoft 365
+Office copilot -> Copilot for Microsoft 365
+Github -> Github Copilot
+MS Office -> Copilot for Microsoft 365
+MSOffice -> Copilot for Microsoft 365
+Microsoft Office -> Copilot for Microsoft 365
+Office Product -> Copilot for Microsoft 365
+Mobile -> Copilot for Mobile
+App -> Copilot for Mobile
+ios -> Copilot for Mobile
+apk -> Copilot for Mobile
+Copilot -> Microsoft Copilot
+
+IMPORTANT: If the input sentence mentions a device(Laptop or Desktop) instead of Copilot, keep the device name as it is.
+
+Rephrase the following input with the correct product family and modify it to fit one of the specified functionalities.
+
+
+Please rephrase and modify the following input sentences with the correct product family names and into one of the specified formats:
+
+[List of input sentences]
+"""
+
+def rephrased_prompt(user_question):
+    global context
+    # Append the new question to the context
+    full_prompt = context + "\nQuestion:\n" + user_question + "\nAnswer:"
+    
+    # Send the query to Azure OpenAI
+    response = client.completions.create(
+        model=deployment_name,
+        prompt=full_prompt,
+        max_tokens=500,
+        temperature=0
+    )
+    
+    # Extract the generated SQL query
+    user_query = response.choices[0].text.strip()
+    # st.write(user_query)
+    
+    # Update context with the latest interaction
+    context += "\nQuestion:\n" + user_question + "\nAnswer:\n" + user_query
+    
+    return user_query
+    
 def user_ques(user_question):
     if user_question:
         device_list = Sentiment_Data['Product_Family'].to_list()
@@ -1333,8 +1666,8 @@ def user_ques(user_question):
                         device_b = device
                         break# Found both devices, exit the loop
 
-        # st.write(device_a)
-        # st.write(device_b)
+        st.write(device_a)
+        st.write(device_b)
 
         if device_a != None and device_b != None:
             col1,col2 = st.columns(2) 
@@ -1436,6 +1769,8 @@ def user_ques(user_question):
                             st.write(query_detailed_deepdive("Summarize reviews of" + device + "for " +  selected_aspect +  "Aspect which have following "+str(dataframe_as_dict)+ str(b) + "Reviews: ",[]))
 
             elif classify_function == "2":
+                data= quantifiable_data(user_question)
+                dataframe_as_dict = data.to_dict(orient='records')
                 st.dataframe(data)
                 try:
                     data = data.dropna()
@@ -1451,113 +1786,17 @@ def user_ques(user_question):
         else:
             print('No Flow')
             
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
-os.environ["AZURE_OPENAI_API_KEY"] = "672370cd6ca440f2a0327351d4f4d2bf"
-os.environ["AZURE_OPENAI_ENDPOINT"] = "https://hulk-openai.openai.azure.com/"
-from openai import AzureOpenAI
-
-client = AzureOpenAI(
-    api_key=os.getenv("672370cd6ca440f2a0327351d4f4d2bf"),  
-    api_version="2024-02-01",
-    azure_endpoint = os.getenv("https://hulk-openai.openai.azure.com/")
-    )
-    
-deployment_name='SurfaceGenAI'
-
-context = """
-You are given a list of product names and a mapping file that maps these names to their corresponding product families. Your task is two-fold:
-
-1. Rephrase any input sentence by replacing the product name with its correct product family according to the mapping file.
-2. Modify the input sentence into one of the specified Features.
-
-Features and sample prompts:
-    1. Comparison - "Compare different features for [Product 1] and [Product 2]"
-    2. Specific Feature comparison - "Compare [Feature] feature of [Product 1] and [Product 2]
-        Features are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
-    3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
-    4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
-        4.1. It can be across any categories such as Product Family, Geography, Data Source etc. Hence repharse the input sentence accordingly.
-    5. Asking net sentiment or review count for multiple Products - "What is the net sentiment and review count of different Product families?". Do not enter multiple product names in this case.
-
-Mapping file:
-
-Copilot in Windows 11 -> Windows Copilot
-Copilot -> Microsoft Copilot
-Copilot for Security -> Copilot for Security
-Copilot Pro -> Copilot Pro
-Microsoft Copilot -> Microsoft Copilot
-Copilot for Microsoft 365 -> Copilot for Microsoft 365
-Github Copilot -> Github Copilot
-Copilot for Mobile -> Copilot for Mobile
-Windows Copilot -> Windows Copilot
-Copilot for Windows -> Windows Copilot
-Copilot Windows -> Windows Copilot
-Win Copilot -> Windows Copilot
-Security Copilot -> Copilot for Security
-Privacy Copilot -> Copilot for Security
-M365 -> Copilot for Microsoft 365
-Microsoft 365 -> Copilot for Microsoft 365
-Office copilot -> Copilot for Microsoft 365
-Github -> Github Copilot
-MS Office -> Copilot for Microsoft 365
-MSOffice -> Copilot for Microsoft 365
-Microsoft Office -> Copilot for Microsoft 365
-Office Product -> Copilot for Microsoft 365
-Mobile -> Copilot for Mobile
-App -> Copilot for Mobile
-ios -> Copilot for Mobile
-apk -> Copilot for Mobile
-
-IMPORTANT: If the input sentence mentions a device(Laptop or Desktop) instead of Copilot, keep the device name as it is.
-
-Rephrase the following input with the correct product family and modify it to fit one of the specified functionalities.
-
-Input: "Summarize reviews for Win Copilot"
-
-Output: "Summarize reviews for Windows Copilot"
-
-Input: "What's the aspect-wise sentiment for Copilot for Windows?"
-
-Output: "What's the aspect-wise sentiment for Windows Copilot?"
-
-Input: "Copilot for Windows vs Copilot Apk"
-Output: "Compare different features of Windows Copilot and Copilot for Mobile"
-
-Input: ""What is the sentiment for copilot in united states"
-Output: "What is the net sentiment for Microsoft Copilot in the United States?
-
-Please rephrase and modify the following input sentences with the correct product family names and into one of the specified formats:
-
-[List of input sentences]
-"""
-
-def finetuned_prompt(user_question):
-    global context
-    # Append the new question to the context
-    full_prompt = context + "\nQuestion:\n" + user_question + "\nAnswer:"
-    
-    # Send the query to Azure OpenAI
-    response = client.completions.create(
-        model=deployment_name,
-        prompt=full_prompt,
-        max_tokens=500,
-        temperature=0
-    )
-    
-    # Extract the generated SQL query
-    user_query = response.choices[0].text.strip()
-    
-    # Update context with the latest interaction
-    context += "\nQuestion:\n" + user_question + "\nAnswer:\n" + user_query
-    
-    return user_query
-
-# In[26]:
-
 if __name__ == "__main__":
     st.header("Copilot Consumer Review Synthesis Tool")
     user_question = st.text_input("Enter the Prompt: ")
     if user_question:
-        user_question_1 = finetuned_prompt(user_question)
-        # st.write(user_question_1)
-        user_ques(user_question_1)
+        classification = 'Generic'
+        classification = finetuned_prompt(user_question)
+        print(classification)
+        if classification != 'Generic':
+            user_question_1 = rephrased_prompt(user_question)
+            # st.write(user_question_1)
+            user_ques(user_question_1)
+        else:
+            user_question_1 = user_question
+            st.write(query_detailed_generic(user_question_1))
