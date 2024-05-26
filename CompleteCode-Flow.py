@@ -1612,6 +1612,10 @@ Features and sample prompts:
 
 IMPORTAT : Net Sentiment is different and aspect sentiment is different. Don't rephrase those questions. If the user askes aspect wise sentiment, let it be there as aspect wise sentiment.
 
+Difference between : Compare reviews of copilot mobile and copilot m365 and Compare [Feature/Aspect] of copilot mobile and copilot m365:
+        In the 1st Qn, user asks Compare different features for [Product 1] and [Product 2]
+        In the 2nd Qn, user wants to compare specific features for [Product 1] and [Product 2]
+
 Mapping file:
 
 Copilot in Windows 11 -> Windows Copilot
