@@ -673,6 +673,7 @@ def get_conversational_chain_generic():
                       Data_Source: This column indicates the platform from which the user reviews were collected, such as Reddit, Play Store, App Store, Tech Websites, or YouTube videos.
                       Geography: This column lists the countries of the users who provided the reviews, allowing for an analysis of regional preferences and perceptions of the products.
                       Product_Family: This column identifies the broader category of products to which the review pertains, enabling comparisons and trend analysis across different product families.
+                                      List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
                       Sentiment: This column reflects the overall tone of the review, whether positive, negative, or neutral, and is crucial for gauging customer sentiment.
                       Aspect: This column highlights the particular features or attributes of the product that the review discusses, pinpointing areas of strength or concern.
                       
@@ -1528,9 +1529,15 @@ List of aspects : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','
 List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
 
 Quantifiable and visualization - This feature enables the retrieval and visualization of data for any requested product/feature. It can answer queries like “Which is the best device?” (Based on Net Sentiment) or “Which device is most commonly commented on?” (Based on Review Count), among others.
+
+
 Generic - This category allows users to ask general questions about any Product, such as the Pros and Cons, common complaints associated with a device, and the top verbatims (Reviews) mentioned in product reviews, etc.
-    IMPORTANT : Compare the interface of all the CoPilot Products (As there is no specific mention of any two device)
+    IMPORTANT : Compare the Interface of all the CoPilot Products (As there is no specific mention of any two device, it should be in Generic)
+
+
 Summarization of reviews for a specific Product - This feature provides a summary of the most frequently mentioned aspects of a device, offering both quantifiable and detailed sentiment analysis. (Don't choose this functionc, if the user asks for basic pros and cons, top verbatims and all)
+
+
 Comparison - This feature allows users to compare two different Products based on user reviews. Remember that this function only does comparision for 2 different Products.
     IMPORTANT : If the user Question mentions 3 or more different Product Families. Then don't give it as Comparision . Make it as Generic. Example : Compare Github Copilot, Wnidows CopIlot and CoPilot Pro. In this case it should choose "Generic", as 3 Product were mentioned in this user query.
 
@@ -1584,6 +1591,9 @@ deployment_name='SurfaceGenAI'
 
 context = """
 You are given a list of product names and a mapping file that maps these names to their corresponding product families. Your task is two-fold:
+
+List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
+
 
 1. Rephrase any input sentence by replacing the product name with its correct product family according to the mapping file.
 2. Modify the input sentence into one of the specified Features.
