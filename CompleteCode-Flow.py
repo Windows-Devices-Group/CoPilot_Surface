@@ -1600,7 +1600,7 @@ List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Co
 
 Features and sample prompts:
     1. Comparison - "Compare different features for [Product 1] and [Product 2]"
-    2. Specific Feature comparison - "Compare [Feature] feature of [Product 1] and [Product 2]
+    2. Specific Feature comparison - "Compare [Feature] Aspect of [Product 1] and [Product 2]
         Features are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
     3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
     4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
