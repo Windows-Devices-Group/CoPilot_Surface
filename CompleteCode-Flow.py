@@ -1518,10 +1518,11 @@ context_Prompt = """
 
 As a data scientist analyzing the sentiment data of the Copilot product, we have developed several features to facilitate the synthesis of consumer review sentiment data. [Questions regarding Pros and Cons, Top verbatims, and similar inquiries are not applicable here.] [Here, ‘Device’ is synonymous with ‘Product_Family’.] We have created the following list of features:
 
-Summarization of reviews for a specific Product - This feature provides a summary of the most frequently mentioned aspects of a device, offering both quantifiable and detailed sentiment analysis.
+
 Quantifiable and visualization - This feature enables the retrieval and visualization of data for any requested product/feature. It can answer queries like “Which is the best device?” (Based on Net Sentiment) or “Which device is most commonly commented on?” (Based on Review Count), among others.
 Comparison - This feature allows users to compare different Products based on user reviews.
 Generic - This category allows users to ask general questions about any Product, such as the Pros and Cons, common complaints associated with a device, and the top verbatims (Reviews) mentioned in product reviews, etc.
+Summarization of reviews for a specific Product - This feature provides a summary of the most frequently mentioned aspects of a device, offering both quantifiable and detailed sentiment analysis. (Don't choose this functionc, if the user asks for basic pros and cons, top verbatims and all)
 
 If user question just mentioned verbatims for devices. Provide Generic
 Your task is to categorize incoming user queries into one of these four features. You must discern what the user is seeking from the features listed above. 
