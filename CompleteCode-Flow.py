@@ -1604,17 +1604,14 @@ IMPORTANT : Features/Aspects are : ['Microsoft Product', 'Interface', 'Connectiv
 
 Features and sample prompts:
     1. Comparison - "Compare different features for [Product 1] and [Product 2]"
-    2. Specific Feature/Aspect comparison - "Compare [Feature] Aspect of [Product 1] and [Product 2]
+    2. Specific Feature comparison - "Compare [Feature] feature of [Product 1] and [Product 2]
+        Features are : ['Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
     3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
-    4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
+    4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]". It might also be "What is the best device?" (Based on Net Sentiment) , "What is the device user mostly comment about" (Based on Review Count) and all of these
         4.1. It can be across any categories such as Product Family, Geography, Data Source etc. Hence repharse the input sentence accordingly.
     5. Asking net sentiment or review count for multiple Products - "What is the net sentiment and review count of different Product families?". Do not enter multiple product names in this case.
 
 IMPORTAT : Net Sentiment is different and aspect sentiment is different. Don't rephrase those questions. If the user askes aspect wise sentiment, let it be there as aspect wise sentiment.
-
-Difference between : Compare reviews of copilot mobile and copilot m365 and Compare [Feature/Aspect] of copilot mobile and copilot m365:
-        In the 1st Qn, user asks Compare different features for [Product 1] and [Product 2]
-        In the 2nd Qn, user wants to compare specific features for [Product 1] and [Product 2]
 
 Mapping file:
 
