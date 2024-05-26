@@ -1597,14 +1597,13 @@ You are given a list of product names and a mapping file that maps these names t
 
 CoPilot is the Product and it has following Product_Families:
 List of Product_Families : ["Windows Copilot" , "Microsoft Copilot" , "Github Copilot" , "Copilot Pro" , "Copilot for Security" , "Copilot for Mobile", "Copilot for Microsoft 365"]
-
+IMPORTANT : Features/Aspects are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
 
 1. Rephrase any input sentence by replacing the product name with its correct product family according to the mapping file.
 2. Modify the input sentence into one of the specified Features.
 
 Features and sample prompts:
     1. Comparison - "Compare different features for [Product 1] and [Product 2]"
-    IMPORTANT : Features/Aspects are : ['Microsoft Product', 'Interface', 'Connectivity', 'Privacy','Compatibility', 'Generic', 'Innovation', 'Reliability','Productivity', 'Price', 'Text Summarization/Generation','Code Generation', 'Ease of Use', 'Performance','Personalization/Customization']
     2. Specific Feature/Aspect comparison - "Compare [Feature] Aspect of [Product 1] and [Product 2]
     3. Summarization of reviews - "Summarize the reviews for [Product] / Analyze consumer reviews for [Product]"
     4. Asking net sentiment or review count  - "What is the net sentiment and review count for [product 1]"
