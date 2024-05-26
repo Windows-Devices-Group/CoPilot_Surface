@@ -1820,7 +1820,7 @@ if __name__ == "__main__":
     if user_question:
         classification = 'Generic'
         classification = finetuned_prompt(user_question)
-        print(classification)
+        st.write(classification)
         if classification != 'Generic':
             user_question_1 = rephrased_prompt(user_question)
             st.write(user_question_1)
