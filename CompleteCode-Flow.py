@@ -664,6 +664,8 @@ def get_conversational_chain_generic():
         prompt_template = """
         
             IMPORTANT: Use only the data provided to you and do not rely on pre-trained documents.
+
+            INMPORTANT : Verbatims is nothing but Review
             
             Given a dataset with these columns: Review, Data_Source, Geography, Product_Family, Sentiment and Aspect (also called Features)
                       
